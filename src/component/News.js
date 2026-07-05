@@ -1621,17 +1621,45 @@ export class News extends Component {
   ];
   constructor() {
     super();
-    console.log("Hello I am a constructor from news component");
+    // console.log("Hello I am a constructor from news component");
     this.state = {
       article: this.articles,
       loading: false,
+      page:1,
+      totalResult: 0
     };
+  }
+  async componentDidMount(){
+    let url=`https://newsapi.org/v2/top-headlines?country=us&category=business&pageSize=${this.props.pageSize}&apiKey=7d9069b897344f42a23f24bba87d998a`
+    let data= await fetch(url);
+    let passedData=await data.json()
+    this.setState({article:passedData.articles,
+      totalResult:passedData.totalResults
+    })
+    
+
+
+  }
+    handleNextclick=async()=>{
+    let url=`https://newsapi.org/v2/top-headlines?country=us&category=business&page=${this.state.page+1}&pageSize=${this.props.pageSize}&apiKey=7d9069b897344f42a23f24bba87d998a`
+    let data= await fetch(url);
+    let passedData=await data.json()
+    this.setState({article:passedData.articles, page: this.state.page+1});
+    window.scrollTo(0,0);
+  }
+    handlePrevclick=async()=>{
+    let url=`https://newsapi.org/v2/top-headlines?country=us&category=business&page=${this.state.page-1}&pageSize=${this.props.pageSize}&apiKey=7d9069b897344f42a23f24bba87d998a`
+    let data= await fetch(url);
+    let passedData=await data.json();
+    this.setState({article:passedData.articles, page: this.state.page-1});
+    window.scrollTo(0,0);
+
   }
 
   render() {
     return (
       <>
-        /
+        
         <div className="container my-3">
           <div className="row">
             {this.state.article.map((ele) => {
@@ -1639,7 +1667,7 @@ export class News extends Component {
                 <div className="col-md-4" key={ele.url}>
                   <Newsitem
                     
-                    title={ele.title.slice(0, 45)}
+                    title={(ele.title||"").slice(0, 45)}
                     description={(ele.description||"").slice(0, 45)+"....."}
                     imageurl={ele.urlToImage}
                     newurl={ele.url}
@@ -1648,31 +1676,11 @@ export class News extends Component {
               );
             })}
 
-            {/* <div className="col-md-4">  
-            <Newsitem
-              title="mytitle"
-              description="mydesc"
-              imageurl="..."  
-              newurl="..."
-            />
-            </div>
-            <div className="col-md-4">  
-            <Newsitem
-              title="mytitle"
-              description="mydesc"
-              imageurl="..."
-              newurl="..."
-            />
-            </div>
-            <div className="col-md-4">  
-            <Newsitem
-              title="mytitle"
-              description="mydesc"
-
-              imageurl="..."
-              newurl="..."
-            /> */}
-            {/* </div> */}
+          
+          </div>
+          <div className="d-flex justify-content-between container">
+            <button type="button" className=" btn btn-dark" onClick={this.handlePrevclick} disabled={this.state.page === 1}> &larr; Previous</button>
+            <button type="button" className="btn btn-dark" onClick={this.handleNextclick} disabled={this.state.page>=Math.ceil(this.state.totalResult/this.props.pageSize)}>Next &rarr;</button>
           </div>
         </div>
       </>

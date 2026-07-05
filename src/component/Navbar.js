@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 export class Navbar extends Component {
-  static propTypes = {};
+  // static propTypes = {};
 
   render() {
     return (
       <>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className=" sticky-top navbar navbar-expand-lg  navbar-dark bg-dark">
           <div className="container-fluid">
             <a className="navbar-brand" href="/">
               News
