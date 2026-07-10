@@ -79,8 +79,8 @@ export class News extends Component {
       totalResult: 0
     };
   }
-  async componentDidMount(){
-    let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
+  updateNews=async()=>{
+       let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
        this.setState({loading:true});
 
     let data= await fetch(url);
@@ -89,10 +89,18 @@ export class News extends Component {
       totalResult:passedData.totalResults,
       loading:false
     })
-    
-
-
   }
+  async componentDidMount(){
+ this.updateNews();
+  
+  }
+   componentDidUpdate(prevProps){
+    if(prevProps.category!==this.props.category){
+      this.setState({page:1},()=>{
+        this.updateNews();
+      })
+    }
+   }
     handleNextclick=async()=>{
     let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&page=${this.state.page+1}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
        this.setState({loading:true})
