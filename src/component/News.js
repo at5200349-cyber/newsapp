@@ -1,21 +1,19 @@
 import React, { Component } from "react";
 import Newsitem from "./Newsitem";
 import Spinner from "./Spinner";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 
 export class News extends Component {
- static defaultProps={
-  country:"us",
-  pageSize:10,
-  category:"sports"
-
-
- }
- static propTypes={
-  country:PropTypes.string,
-  pageSize:PropTypes.number,
-  category:PropTypes.string,
- }
+  static defaultProps = {
+    country: "us",
+    pageSize: 12,
+    category: "sports",
+  };
+  static propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string,
+  };
   articles = [
     {
       source: {
@@ -33,7 +31,7 @@ export class News extends Component {
       content:
         "At first glance, Orange Bible looks like a standard scripture app. But this app is not just for followers of Jesus Christ, it’s also for followers of Satoshi Nakamoto. On top of that, it shows that e… [+5059 chars]",
     },
-    
+
     {
       source: {
         id: null,
@@ -75,85 +73,99 @@ export class News extends Component {
     this.state = {
       article: this.articles,
       loading: false,
-      page:1,
-      totalResult: 0
+      page: 1,
+      totalResult: 0,
     };
   }
-  updateNews=async()=>{
-       let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
-       this.setState({loading:true});
+  updatebutton = async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&page=${this.state.page}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`;
+    this.setState({ loading: true });
 
-    let data= await fetch(url);
-    let passedData=await data.json()
-    this.setState({article:passedData.articles,
-      totalResult:passedData.totalResults,
-      loading:false
-    })
+    let data = await fetch(url);
+    let passedData = await data.json();
+
+    this.setState({ article: passedData.articles, loading: false }, () => {
+      window.scrollTo(0, 0);
+    });
+  };
+  updateNews = async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`;
+    this.setState({ loading: true });
+
+    let data = await fetch(url);
+    let passedData = await data.json();
+    this.setState({
+      article: passedData.articles,
+      totalResult: passedData.totalResults,
+      loading: false,
+    });
+  };
+  async componentDidMount() {
+    this.updateNews();
   }
-  async componentDidMount(){
- this.updateNews();
-  
-  }
-   componentDidUpdate(prevProps){
-    if(prevProps.category!==this.props.category){
-      this.setState({page:1},()=>{
+  componentDidUpdate(prevProps) {
+    if (prevProps.category !== this.props.category) {
+      this.setState({ page: 1 }, () => {
         this.updateNews();
-      })
+      });
     }
-   }
-    handleNextclick=async()=>{
-    let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&page=${this.state.page+1}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
-       this.setState({loading:true})
-
-    let data= await fetch(url);
-    let passedData=await data.json()
-      
-
-    this.setState({article:passedData.articles, page: this.state.page+1,loading:false},() => {
-    window.scrollTo(0,0);
-  });
-   
   }
-    handlePrevclick=async()=>{
-    let url=`https://newsapi.org/v2/top-headlines?country=${this.props.country}&page=${this.state.page-1}&pageSize=${this.props.pageSize}&category=${this.props.category}&apiKey=7d9069b897344f42a23f24bba87d998a`
-   this.setState({loading:true})
-    let data= await fetch(url);
-    let passedData=await data.json();
-    
-    
-    this.setState({article:passedData.articles, page: this.state.page-1,loading:false},() => {
-    window.scrollTo(0,0);
-  });
-    
-  }
+  handleNextclick = async () => {
+    this.setState({ page: this.state.page + 1 }, () => {
+      this.updatebutton();
+    });
+  };
+  handlePrevclick = async () => {
+    this.setState({ page: this.state.page - 1 }, () => {
+      this.updatebutton();
+    });
+  };
 
   render() {
     return (
       <>
-        
         <div className="container my-3">
-          
-          { this.state.loading &&<Spinner/>}
+          {this.state.loading && <Spinner />}
           <div className="row">
-            {!this.state.loading&&this.state.article.map((ele) => {
-              return (
-                <div className="col-md-4" key={ele.url}>
-                  <Newsitem
-                    
-                    title={(ele.title||"").slice(0, 45)}
-                    description={(ele.description||"").slice(0, 45)+"....."}
-                    imageurl={ele.urlToImage}
-                    newurl={ele.url}
-                  />
-                </div>
-              );
-            })}
-
-          
+            {!this.state.loading &&
+              this.state.article.map((ele) => {
+                return (
+                  <div className="col-md-4" key={ele.url}>
+                    <Newsitem
+                      title={(ele.title || "").slice(0, 45)}
+                      description={
+                        (ele.description || "").slice(0, 45) + "....."
+                      }
+                      imageurl={ele.urlToImage}
+                      newurl={ele.url}
+                      author={ele.author}
+                      date={ele.publishedAt}
+                    />
+                  </div>
+                );
+              })}
           </div>
           <div className="d-flex justify-content-between container">
-            <button type="button" className=" btn btn-dark" onClick={this.handlePrevclick} disabled={this.state.page === 1}> &larr; Previous</button>
-            <button type="button" className="btn btn-dark" onClick={this.handleNextclick} disabled={this.state.page>=Math.ceil(this.state.totalResult/this.props.pageSize)}>Next &rarr;</button>
+            <button
+              type="button"
+              className=" btn btn-dark"
+              onClick={this.handlePrevclick}
+              disabled={this.state.page === 1}
+            >
+              {" "}
+              &larr; Previous
+            </button>
+            <button
+              type="button"
+              className="btn btn-dark"
+              onClick={this.handleNextclick}
+              disabled={
+                this.state.page >=
+                Math.ceil(this.state.totalResult / this.props.pageSize)
+              }
+            >
+              Next &rarr;
+            </button>
           </div>
         </div>
       </>
