@@ -1,8 +1,8 @@
 import "./App.css";
 // import PropTypes from 'prop-types'
-// import { useState } from "react";
+import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
-import React, { Component } from "react";
+// import React, { Component } from "react";
 import Navbar from "./component/Navbar";
 import News from "./component/News";
 import {
@@ -11,34 +11,32 @@ import {
   Route,
 
 } from "react-router-dom";
-export default class App extends Component {
-  api="7d9069b897344f42a23f24bba87d998a"
-  state={
-    progress:0
-  }
-  setProgress=(progress)=>{
-  this.setState({progress:progress})
-  }
-  render() {
+const App =()=> {
+   const api="7d9069b897344f42a23f24bba87d998a"
+ const [progress,setProgress]=useState(0);
+
+  const country="us"
+  const pagesize=12
     return (
       <>
         <Navbar />
          <LoadingBar
         color="#f11946"
-        progress={this.state.progress}
+        progress={progress}
        
       />
         <Routes>
-          <Route path="/" element={<News setProgress={this.setProgress} api={this.api}  category="general"/>}/>
-          <Route path="/general" element={<News setProgress={this.setProgress} api={this.api}  category="general"/>}/>
-          <Route path="/sports" element={<News setProgress={this.setProgress} api={this.api}  category="sports"/>}/>
-          <Route path="/business" element={<News setProgress={this.setProgress} api={this.api}  category="business"/>}/>
-          <Route path="/health" element={<News setProgress={this.setProgress} api={this.api}  category="health"/>}/>
-          <Route path="/science" element={<News setProgress={this.setProgress} api={this.api}  category="science"/>}/>
-          <Route path="/technology" element={<News setProgress={this.setProgress} api={this.api}  category="technology"/>}/>
+          <Route path="/" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="general"/>}/>
+          <Route path="/general" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="general"/>}/>
+          <Route path="/sports" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="sports"/>}/>
+          <Route path="/business" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="business"/>}/>
+          <Route path="/health" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="health"/>}/>
+          <Route path="/science" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="science"/>}/>
+          <Route path="/technology" element={<News setProgress={setProgress} api={api} country={country} pageSize={pagesize}  category="technology"/>}/>
 
         </Routes>
       </>
     );
   }
-}
+
+export default App;
